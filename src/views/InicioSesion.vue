@@ -1,106 +1,104 @@
 <template>
-    <div class="inicio-sesion-container">
-      <div class="inicio-sesion-form">
-        <h2>Iniciar Sesión</h2>
-        <form @submit.prevent="login">
-          <label for="username">Usuario:</label>
-          <input type="text" id="username" v-model="username" required>
-  
-          <label for="password">Contraseña:</label>
-          <input type="password" id="password" v-model="password" required>
-  
-          <button type="submit">Iniciar Sesión</button>
-        </form>
-  
-        <div v-if="error" class="error-message">
-          {{ errorMessage }}
-        </div>
-      </div>
+  <div class="login-container">
+    <div class="login-form">
+      <h2>Iniciar Sesión</h2>
+      <label for="usuario">Usuario:</label>
+      <input v-model="usuario" type="text" id="usuario" required />
+
+      <label for="contrasena">Contraseña:</label>
+      <input v-model="contrasena" type="password" id="contrasena" required />
+
+      <button @click="login">Iniciar Sesión</button>
     </div>
-  </template>
-  
-  <script>
-  export default {
-    data() {
-      return {
-        username: "",
-        password: "",
-        error: false,
-        errorMessage: "",
-      };
-    },
-    methods: {
-      login() {
-        // Aquí puedes agregar la lógica de autenticación si es necesario
-        // Por ahora, simplemente muestra un mensaje de error si no se ingresa un usuario y contraseña
-        if (!this.username || !this.password) {
-          this.error = true;
-          this.errorMessage = "Por favor, ingrese un usuario y contraseña.";
+  </div>
+</template>
+
+<style>
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.login-form {
+  width: 300px;
+  padding: 20px;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.login-form h2 {
+  text-align: center;
+  color: #333;
+}
+
+label {
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 15px;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #2980b9;
+}
+</style>
+
+<script>
+import axios from "axios";
+
+export default {
+  data() {
+    return {
+      usuario: "tu_usuario",
+      contrasena: "tu_contraseña",
+      intentosFallidos: 0,
+    };
+  },
+  methods: {
+    async login() {
+      try {
+        const response = await axios.post(
+          "https://localhost:7083/api/Usuario/login",
+          {
+            usuario1: this.usuario,
+            contraseña: this.contrasena,
+          }
+        );
+
+        if (response.data.statusCode === 200) {
+          this.intentosFallidos = 0;
+          alert("Inicio de sesión exitoso");
         } else {
-          // Aquí podrías realizar una solicitud de autenticación a tu API
-          // Por ejemplo, podrías usar Axios para hacer la solicitud HTTP
-          // axios.post('tu_url_de_autenticacion', { username: this.username, password: this.password })
-          //   .then(response => {
-          //     // Manejar la respuesta de la API
-          //   })
-          //   .catch(error => {
-          //     // Manejar el error de la API
-          //   });
-          console.log("Simulación de inicio de sesión");
-          console.log("Usuario:", this.username);
-          console.log("Contraseña:", this.password);
+          this.intentosFallidos += 1;
+
+          if (this.intentosFallidos >= 3) {
+            alert("Usuario bloqueado. Contacte al administrador.");
+          } else {
+            alert("Credenciales inválidas");
+          }
         }
-      },
+      } catch (error) {
+        console.error("Error al autenticar:", error);
+      }
     },
-  };
-  </script>
-  
-  <style scoped>
-  .inicio-sesion-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-  }
-  
-  .inicio-sesion-form {
-    width: 300px;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  form {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  label {
-    margin-bottom: 5px;
-  }
-  
-  input {
-    margin-bottom: 10px;
-    padding: 8px;
-  }
-  
-  button {
-    background-color: #4caf50;
-    color: white;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #45a049;
-  }
-  
-  .error-message {
-    color: red;
-    margin-top: 10px;
-  }
-  </style>
-  
+  },
+};
+</script>
