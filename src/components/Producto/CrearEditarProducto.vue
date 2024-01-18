@@ -38,6 +38,43 @@
 
         <button @click="guardarProducto">Guardar Producto</button>
       </div>
+
+      <div v-if="selectedItem === 1">
+        <!-- Formulario para Editar Producto -->
+        <label>ID Producto a Editar:</label>
+        <input v-model="idProductoEditar" type="text" />
+
+        <label>Nombre:</label>
+        <input v-model="producto.nombre" type="text" />
+
+        <label>ID Familia:</label>
+        <input v-model="producto.idFamilia" type="number" />
+
+        <label>Precio:</label>
+        <input v-model="producto.precio" type="number" />
+
+        <label>Stock:</label>
+        <input v-model="producto.stock" type="number" />
+
+        <label>Activo:</label>
+        <input v-model="producto.activo" type="checkbox" />
+
+        <label>Fecha de Creación:</label>
+  <input v-model="producto.fechaCreacion" type="datetime-local" />
+
+        <label>ID Usuario:</label>
+        <input v-model="producto.idUsuario" type="number" />
+
+        <button @click="actualizarProducto">Actualizar Producto</button>
+      </div>
+
+      <div v-if="selectedItem === 2">
+        <!-- Formulario para Eliminar Producto -->
+        <label>ID Producto a Eliminar:</label>
+        <input v-model="idProductoEliminar" type="text" />
+
+        <button @click="eliminarProducto">Eliminar Producto</button>
+      </div>
     </div>
   </div>
 </template>
@@ -52,6 +89,8 @@ export default {
         { label: 'Eliminar Producto', content: { title: 'Eliminar Producto', description: 'Seleccione un producto para eliminar' } },
       ],
       selectedItem: null,
+      idProductoEliminar: '', // Nueva propiedad para almacenar el ID del producto a eliminar
+      idProductoEditar: '',   // Nueva propiedad para almacenar el ID del producto a editar
       producto: {
         codigo: '',
         nombre: '',
@@ -59,6 +98,7 @@ export default {
         precio: 0,
         stock: 0,
         activo: true,
+        fechaCreacion: '',  // Asegúrate de inicializar la propiedad fechaCreacion
         idUsuario: 0,
       },
     };
@@ -97,6 +137,73 @@ export default {
           console.error('Error al guardar el producto', error);
         });
     },
+    eliminarProducto() {
+      // Validar que el ID del producto a eliminar no esté vacío
+      if (!this.idProductoEliminar.trim()) {
+        console.error('Por favor, ingrese un ID de producto válido.');
+        return;
+      }
+
+      // Realizar la llamada a la API para eliminar el producto
+      fetch(`https://localhost:7083/api/Producto/${this.idProductoEliminar}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then(response => {
+          if (response.ok) {
+            console.log('Producto eliminado con éxito');
+            // Limpiar el input después de eliminar el producto
+            this.idProductoEliminar = '';
+          } else {
+            console.error('Error al eliminar el producto');
+          }
+        })
+        .catch(error => {
+          console.error('Error al comunicarse con la API', error);
+        });
+    },
+    actualizarProducto() {
+      // Validar que el ID del producto a editar no esté vacío
+      if (!this.idProductoEditar.trim()) {
+        console.error('Por favor, ingrese un ID de producto válido.');
+        return;
+      }
+
+      // Asignar el ID del producto a la propiedad producto
+      this.producto.idProducto = parseInt(this.idProductoEditar);
+
+      // Realizar la llamada a la API para actualizar el producto
+      fetch(`https://localhost:7083/api/Producto/${this.idProductoEditar}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(this.producto),
+      })
+        .then(response => {
+          if (response.ok) {
+            console.log('Producto actualizado con éxito');
+            // Limpiar los inputs después de actualizar el producto
+            this.idProductoEditar = '';
+            this.producto = {
+              codigo: '',
+              nombre: '',
+              idFamilia: 0,
+              precio: 0,
+              stock: 0,
+              activo: true,
+              idUsuario: 0,
+            };
+          } else {
+            console.error('Error al actualizar el producto');
+          }
+        })
+        .catch(error => {
+          console.error('Error al comunicarse con la API', error);
+        });
+    },
   },
 };
 </script>
@@ -128,5 +235,4 @@ label {
 input {
   margin-bottom: 10px;
 }
-
 </style>
