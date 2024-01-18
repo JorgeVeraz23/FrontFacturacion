@@ -79,13 +79,16 @@
   background-color: #ff9b3d;
 }
 
+
+
 .content {
   flex: 1;
   display: flex;
-  flex-direction: column; /* Ajuste para colocar contenido encima del otro */
-  justify-content: flex-start; /* Alinea el contenido hacia arriba */
-  align-items: center;
+  flex-direction: row; /* Mantén la dirección de fila */
+  justify-content: center; /* Alinea el contenido en el centro horizontalmente */
+  align-items: flex-start; /* Alinea el contenido hacia arriba */
   margin-left: 20px; /* Ajuste del margen izquierdo según tus necesidades */
   margin-top: 20px; /* Ajuste del margen superior */
 }
+
 </style>
