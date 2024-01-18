@@ -40,6 +40,9 @@ export default {
           this.intentosFallidos = 0;
           this.bloqueado = false;
           alert("Inicio de sesión exitoso");
+
+          // Redirigir al menú principal después del inicio de sesión exitoso
+          this.$router.push('/menu-principal/crear-editar-factura');
         } 
           
       } catch (error) {

@@ -27,15 +27,10 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'MenuPrincipal',
-};
-</script>
-
 <style>
 .container {
   display: flex;
+  justify-content: flex-end;
   height: 100vh;
 }
 
@@ -43,12 +38,12 @@ export default {
   display: flex;
   flex-direction: column;
   width: 250px;
-  background-color: #ff8c00; /* Naranja */
+  background-color: #ff8c00;
   color: white;
 }
 
 .menu-header {
-  background-color: #3498db; /* Azul claro */
+  background-color: #3498db;
   color: white;
   padding: 10px;
   text-align: center;
@@ -69,7 +64,7 @@ export default {
   display: block;
   padding: 8px 16px;
   margin-bottom: 8px;
-  background-color: #ffaf5f; /* Naranja claro */
+  background-color: #ffaf5f;
   color: #333;
   text-decoration: none;
   border-radius: 5px;
@@ -77,18 +72,20 @@ export default {
 }
 
 .menu-link:hover {
-  background-color: #ff9b3d; /* Naranja más oscuro al pasar el ratón */
+  background-color: #ff9b3d;
 }
 
 .router-link-exact-active {
-  background-color: #ff9b3d; /* Naranja más oscuro cuando la ruta está activa */
+  background-color: #ff9b3d;
 }
 
 .content {
   flex: 1;
   display: flex;
-  justify-content: center;
+  flex-direction: column; /* Ajuste para colocar contenido encima del otro */
+  justify-content: flex-start; /* Alinea el contenido hacia arriba */
   align-items: center;
-  margin-left: 20px; /* Ajusta el margen según tus preferencias */
+  margin-left: 20px; /* Ajuste del margen izquierdo según tus necesidades */
+  margin-top: 20px; /* Ajuste del margen superior */
 }
 </style>
