@@ -1,83 +1,109 @@
 <template>
   <div>
-    <h2>Listar Facturas</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>ID Factura</th>
-          <th>Número de Factura</th>
-          <th>RUC Cliente</th>
-          <th>Razón Social Cliente</th>
-          <th>Subtotal</th>
-          <th>Porcentaje IGV</th>
-          <th>IGV</th>
-          <th>Total</th>
-          <th>ID Usuario</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="factura in facturas" :key="factura.idFactura">
-          <td>{{ factura.idFactura }}</td>
-          <td>{{ factura.numeroFactura }}</td>
-          <td>{{ factura.rucCliente }}</td>
-          <td>{{ factura.razonSocialCliente }}</td>
-          <td>{{ factura.subtotal }}</td>
-          <td>{{ factura.porcentajeIgv }}</td>
-          <td>{{ factura.igv }}</td>
-          <td>{{ factura.total }}</td>
-          <td>{{ factura.idUsuario }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <!-- Cabecera de la factura -->
+    <div>
+      <label>Id Usuario:</label>
+      <input v-model="factura.idUsuario" />
+      <label>Id Factura:</label>
+      <input v-model="factura.idFactura" disabled />
+      <label>Número de Factura:</label>
+      <input v-model="factura.numeroFactura" />
+      <label>Ruc del cliente:</label>
+      <input v-model="factura.rucCliente" />
+      <label>Razón social del cliente:</label>
+      <input v-model="factura.razonSocialCliente" />
+      <label>Subtotal:</label>
+      <input v-model="factura.subtotal" />
+      <label>Porcentaje de IGV:</label>
+      <input v-model="factura.porcentajeIGV" />
+      <label>IGV:</label>
+      <input v-model="factura.igv" disabled />
+      <label>Total:</label>
+      <input v-model="factura.total" disabled />
+    </div>
+
+    <!-- Detalle de la factura -->
+    <div>
+      <table>
+        <thead>
+          <tr>
+            <th>Id Item</th>
+            <th>Código de Producto</th>
+            <th>Nombre del Producto</th>
+            <th>Precio</th>
+            <th>Cantidad</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(item, index) in factura.detalle" :key="index">
+            <td>{{ item.idItem }}</td>
+            <td><input v-model="item.codigoProducto" /></td>
+            <td><input v-model="item.nombreProducto" /></td>
+            <td><input v-model="item.precio" /></td>
+            <td><input v-model="item.cantidad" /></td>
+            <td><input v-model="item.subtotal" disabled /></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Botones para LISTAR, CREAR, ELIMINAR -->
+    <div>
+      <button @click="listarFacturas">Listar Facturas</button>
+      <button @click="crearFactura">Crear Factura</button>
+      <button @click="eliminarFactura">Eliminar Factura</button>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'ListarFacturas',
   data() {
     return {
-      facturas: [],
+      factura: {
+        idUsuario: null,
+        idFactura: null,
+        numeroFactura: '',
+        rucCliente: '',
+        razonSocialCliente: '',
+        subtotal: null,
+        porcentajeIGV: null,
+        igv: null,
+        total: null,
+        detalle: [
+          {
+            idItem: null,
+            codigoProducto: '',
+            nombreProducto: '',
+            precio: null,
+            cantidad: null,
+            subtotal: null
+          }
+        ]
+      }
     };
   },
   methods: {
-    async obtenerFacturas() {
-      try {
-        const response = await fetch('https://localhost:7083/api/Factura');
-        const data = await response.json();
-        console.log('Datos de facturas:', data);
-        this.facturas = data.resultado;
-      } catch (error) {
-        console.error('Error al obtener facturas:', error);
-      }
+    listarFacturas() {
+      // Lógica para listar facturas
     },
-  },
-  mounted() {
-    this.obtenerFacturas();
-  },
+    crearFactura() {
+      // Lógica para crear factura
+    },
+    eliminarFactura() {
+      // Lógica para eliminar factura
+    }
+  }
 };
 </script>
 
-<style>
-/* Estilos para la tabla */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
 
-th, td {
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: left;
-}
+<style scoped>
+/* Estilos específicos del componente aquí... */
+</style>
 
-th {
-  background-color: #3498db; /* Azul claro */
-  color: white;
-}
 
-tr:hover {
-  background-color: #f5f5f5; /* Fondo gris claro al pasar el ratón sobre la fila */
-}
+<style scoped>
+/* Estilos específicos del componente aquí... */
 </style>
