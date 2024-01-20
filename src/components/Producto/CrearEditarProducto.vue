@@ -112,7 +112,7 @@ export default {
       // Utiliza this.producto para obtener los datos del producto
       // Puedes usar la función fetch o axios para realizar la llamada a la API
       // Ejemplo usando fetch:
-      fetch('https://localhost:7083/api/Producto', {
+      fetch('localhost:7083/api/Producto', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
