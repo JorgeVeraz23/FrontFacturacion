@@ -165,6 +165,7 @@ export default {
       idUsuarioFactura: null,
       idFacturaMostrar: null,
       facturaMostrada: null,
+      productosEnCarrito: [],
       ultimaFactura: {
         idFactura: 1,
       }
