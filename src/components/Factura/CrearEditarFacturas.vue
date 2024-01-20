@@ -62,6 +62,28 @@
         </tr>
       </tbody>
     </table>
+    
+    <table>
+  <thead>
+    <tr>
+      <th>Código</th>
+      <th>Nombre</th>
+      <th>Cantidad</th>
+      <th>Precio/u</th>
+      <!-- Agrega más columnas según sea necesario -->
+    </tr>
+  </thead>
+  <tbody>
+    <tr v-for="(producto, index) in productosEnCarrito" :key="index">
+      <td>{{ producto.codigo }}</td>
+      <td>{{ producto.nombre }}</td>
+      <td>{{ producto.cantidad }}</td>
+      <td>{{ producto.precio }}</td>
+      <!-- Agrega más columnas según sea necesario -->
+    </tr>
+  </tbody>
+</table>
+
 
     <!-- Tabla para mostrar productos seleccionados -->
     <table v-if="products.length > 0">
@@ -367,8 +389,6 @@ export default {
     // Verificar si hay productos para agregar al detalle de factura
     if (this.productsToShow.length > 0) {
       const productToAdd = this.productsToShow[0];
-      console.log('codigoProducto:', productToAdd.codigo);
-console.log('cantidad:', productToAdd.cantidad || 1);
 
       // Realizar la petición POST a la API de DetalleFactura/AddItem
       const response = await axios.post(`https://localhost:7083/api/DetalleFactura/AddItem/${idFactura}`, {
@@ -383,6 +403,9 @@ console.log('cantidad:', productToAdd.cantidad || 1);
       if (response.status === 201) {
         console.log('Producto agregado al carrito correctamente');
 
+        // Agregar el producto al array productosEnCarrito
+        this.productosEnCarrito.push(productToAdd);
+
         // Limpiar la lista de productsToShow
         this.productsToShow = [];
       } else {
@@ -395,11 +418,7 @@ console.log('cantidad:', productToAdd.cantidad || 1);
   } catch (error) {
     console.error('Error de red:', error);
   }
-}
-
-
-   ,
-
+},
 
 
     formatCurrency(value) {
