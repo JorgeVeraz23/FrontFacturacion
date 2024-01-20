@@ -366,17 +366,20 @@ export default {
     // Verificar si hay productos para agregar al detalle de factura
     if (this.productsToShow.length > 0) {
       const productToAdd = this.productsToShow[0];
+      console.log('codigoProducto:', productToAdd.codigo);
+console.log('cantidad:', productToAdd.cantidad || 1);
 
       // Realizar la petición POST a la API de DetalleFactura/AddItem
       const response = await axios.post(`https://localhost:7083/api/DetalleFactura/AddItem/${idFactura}`, {
         idFactura: idFactura,
         idUsuario: idUsuario,
         codigoProducto: productToAdd.codigo,
+        nombreProducto: productToAdd.nombre,
         cantidad: productToAdd.cantidad || 1,
       });
 
       // Verificar si la petición fue exitosa
-      if (response.status === 200) {
+      if (response.status === 201) {
         console.log('Producto agregado al carrito correctamente');
 
         // Limpiar la lista de productsToShow
