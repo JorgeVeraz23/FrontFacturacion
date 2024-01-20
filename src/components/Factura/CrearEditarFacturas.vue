@@ -149,6 +149,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
   data() {
     return {
@@ -165,68 +166,42 @@ export default {
       idFacturaMostrar: null,
       facturaMostrada: null,
       ultimaFactura: {
-        idFactura: null,
-        numeroFactura: null,
-        rucCliente: null,
-        razonSocialCliente: null,
-        subtotal: null,
-        igv: null,
-        total: null,
-        idUsuario: null,
+        idFactura: 1,
       }
     };},
-  created() {
-    // Llamar al método para obtener la última factura al cargar el componente
-    this.obtenerUltimaFactura();
-
-    // Configurar un temporizador para actualizar la última factura cada segundo
-    /*setInterval(() => {
-      this.obtenerUltimaFactura();
-    }, 1000); // 1000 milisegundos = 1 segundo*/
-  },
   methods: {
-    async iniciarFacturacion() {
-      try {
-        // Realizar la petición POST a la API para crear una nueva factura
-        const response = await fetch('https://localhost:7083/api/Factura', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            NumeroFactura: this.numeroFactura,
-            RucCliente: this.rucCliente,
-            RazonSocialCliente: this.razonSocialCliente,
-            Subtotal: this.subtotal,
-            PorcentajeIgv: this.porcentajeIgv,
-            IdUsuario: this.idUsuarioFactura,
-          }),
-        });
+    async ultimaFactura1() {
+  try {
+    // Realizar la petición GET
+    const response = await axios.get("https://localhost:7083/api/Factura/ultimaFactura");
 
-        // Verificar si la petición fue exitosa
-        if (response.ok) {
-          // Obtener la respuesta en formato JSON
-          const facturaData = await response.json();
+    // Verificar el estado de la respuesta
+    if (response.status === 200) {
+      // Obtener el cuerpo de la respuesta
+      const facturaData = response.data;
 
-          // Asignar el ID de la factura devuelto por la API a la variable facturaId
-          this.facturaId = facturaData.idFactura;
+      // Imprimir la respuesta completa en la consola
+      console.log('Respuesta completa:', response);
 
-          // Limpiar la lista de productos y reiniciar el subtotal
-          this.products = [];
-          this.subtotal = 0;
+      // Imprimir los valores obtenidos en la consola
+      console.log('idFactura:', facturaData.item1);
+      console.log('idUsuario:', facturaData.item2);
 
-        } else {
-          // Manejar errores de la petición
-          console.error('Error en la petición:', response.statusText);
+      // Devolver los valores
+      return [facturaData.item1, facturaData.item2];
+    }
 
-          // Agregar más información del error si está disponible
-          const errorData = await response.json().catch(() => null);
-          console.error('Detalles del error:', errorData);
-        }
-      } catch (error) {
-        console.error('Error al iniciar la facturación:', error);
-      }
-    },
+    // Devolver un valor predeterminado si la respuesta no es exitosa
+    return [-1, -1];
+  } catch (error) {
+    // Manejar errores de la petición
+    console.error('Error al obtener la última factura:', error);
+
+    // Devolver un valor predeterminado en caso de error
+    return [-1, -1];
+  }
+}
+,
 
     async getProduct() {
       try {
@@ -248,37 +223,7 @@ export default {
         console.error('Error de red:', error);
       }
     },
-    async obtenerUltimaFactura() {
-  try {
-    // Realizar la petición GET a la API para obtener la última factura
-    const response = await fetch('https://localhost:7083/api/Factura/UltimaFactura');
 
-    // Verificar si la petición fue exitosa
-    if (response.ok) {
-      // Obtener la respuesta en formato JSON
-      const facturaData = await response.json();
-      if (facturaData) {
-  console.log(facturaData);
-  console.log(facturaData.idFactura)
-} else {
-  console.log('No se encontró una factura');
-}
-if (facturaData) {
-  this.facturaData = facturaData;
-} else {
-  this.facturaData = null;
-}
-      // Devolver la factura
-      return facturaData;
-    } else {
-      // Devolver null si no se encuentra la factura
-      return null;
-    }
-  } catch (error) {
-    console.error('Error al obtener la última factura:', error);
-    return null;
-  }
-},
     async agregarADetalleFactura() {
       try {
         // Verificar si hay productos para agregar al detalle de factura
@@ -412,54 +357,45 @@ if (facturaData) {
         console.error('Error al mostrar la factura:', error);
       }
     },
-
-    // Modify the `addItemToFactura` method to ensure factura is initiated
-async addItemToFactura(product) {
-  // Obtener la última factura
-  const ultimaFactura = await this.obtenerUltimaFactura();
-if (ultimaFactura) {
-  this.ultimaFactura = ultimaFactura;
-} else {
-  this.ultimaFactura = null;
-}
-  this.ultimaFactura 
+    
+    async addItemToFactura() {
   try {
+    // Obtener los valores primitivos de la última factura
+    const [idFactura, idUsuario] = await this.ultimaFactura1();
 
-    // Verificar nuevamente si hay una factura después de iniciar la facturación
-    if (this.ultimaFactura) {
+    // Verificar si hay productos para agregar al detalle de factura
+    if (this.productsToShow.length > 0) {
+      const productToAdd = this.productsToShow[0];
+
       // Realizar la petición POST a la API de DetalleFactura/AddItem
-      const response = await fetch(`https://localhost:7083/api/DetalleFactura/AddItem/${this.facturaId}`, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          idFactura: this.ultimaFactura.idFactura,
-          idUsuario: this.ultimaFactura.idUsuario,
-          codigoProducto: product.codigo,
-          cantidad: product.cantidad || 1,
-        }),
+      const response = await axios.post(`https://localhost:7083/api/DetalleFactura/AddItem/${idFactura}`, {
+        idFactura: idFactura,
+        idUsuario: idUsuario,
+        codigoProducto: productToAdd.codigo,
+        cantidad: productToAdd.cantidad || 1,
       });
 
       // Verificar si la petición fue exitosa
-      if (response.ok) {
+      if (response.status === 200) {
         console.log('Producto agregado al carrito correctamente');
 
-        // Actualizar subtotal y limpiar la lista de productosToShow
-        this.subtotal += product.precio;
+        // Limpiar la lista de productsToShow
         this.productsToShow = [];
       } else {
         // Manejar errores de la petición
         console.error('Error al agregar el producto al carrito:', response.statusText);
       }
     } else {
-      console.error('No se pudo iniciar la facturación. Verifique y vuelva a intentar.');
+      console.error('No hay productos para agregar al carrito.');
     }
   } catch (error) {
     console.error('Error de red:', error);
   }
-},
+}
+
+
+   ,
+
 
 
     formatCurrency(value) {
