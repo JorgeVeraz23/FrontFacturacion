@@ -70,6 +70,7 @@
       <th>Nombre</th>
       <th>Cantidad</th>
       <th>Precio/u</th>
+      <th>SubTotal</th>
       <!-- Agrega más columnas según sea necesario -->
     </tr>
   </thead>
@@ -79,6 +80,7 @@
       <td>{{ producto.nombre }}</td>
       <td>{{ producto.cantidad }}</td>
       <td>{{ producto.precio }}</td>
+      <td>{{ producto.subtotal }}</td>
       <!-- Agrega más columnas según sea necesario -->
     </tr>
   </tbody>
@@ -225,6 +227,38 @@ export default {
   }
 }
 ,
+async ultimoDetalleFacturaId() {
+  try {
+    // Realizar la petición GET
+    const response = await axios.get("https://localhost:7083/api/DetalleFactura/ultimoDetalleFacturaId");
+
+    // Verificar el estado de la respuesta
+    if (response.status === 200) {
+      // Obtener el cuerpo de la respuesta
+      const detalleFacturaId = response.data;
+
+      // Imprimir la respuesta completa en la consola
+      console.log('Respuesta completa:', response);
+
+      // Imprimir el valor obtenido en la consola
+      console.log('Ultimo DetalleFacturaId:', detalleFacturaId);
+
+      // Devolver el valor
+      return detalleFacturaId;
+    }
+
+    // Devolver un valor predeterminado si la respuesta no es exitosa
+    return -1;
+  } catch (error) {
+    // Manejar errores de la petición
+    console.error('Error al obtener el último DetalleFacturaId:', error);
+
+    // Devolver un valor predeterminado en caso de error
+    return -1;
+  }
+}
+,
+
 
     async getProduct() {
       try {
@@ -380,11 +414,13 @@ export default {
         console.error('Error al mostrar la factura:', error);
       }
     },
-    
     async addItemToFactura() {
   try {
     // Obtener los valores primitivos de la última factura
     const [idFactura, idUsuario] = await this.ultimaFactura1();
+
+    // Obtener el último DetalleFacturaId
+    const detalleFacturaId = await this.ultimoDetalleFacturaId();
 
     // Verificar si hay productos para agregar al detalle de factura
     if (this.productsToShow.length > 0) {
@@ -403,13 +439,31 @@ export default {
       if (response.status === 201) {
         console.log('Producto agregado al carrito correctamente');
 
-        // Agregar el producto al array productosEnCarrito
-        this.productosEnCarrito.push(productToAdd);
+        // Verificar si el detalleFacturaId es diferente de -1
+        if (detalleFacturaId !== -1) {
+          // Obtener el detalle del producto después de agregarlo al carrito
+          try {
+            // Realizar la petición GET a la API de DetalleFactura para obtener el detalle actualizado
+            const detalleFacturaResponse = await axios.get(`https://localhost:7083/api/DetalleFactura/${detalleFacturaId+1}`);
+            const detalleFactura = detalleFacturaResponse.data.resultado;
+
+            // Asignar el subtotal del producto al objeto en productosEnCarrito
+            const subtotal = detalleFactura.subtotal;
+            productToAdd.subtotal = subtotal;
+
+            // Agregar el producto al array productosEnCarrito
+            this.productosEnCarrito.push(productToAdd);
+          } catch (error) {
+            console.error('Error al obtener el detalle de factura:', error);
+          }
+        } else {
+          console.error('No se pudo encontrar el detalle de factura.');
+        }
 
         // Limpiar la lista de productsToShow
         this.productsToShow = [];
       } else {
-        // Manejar errores de la petición
+        // Manejar errores de la petición POST a la API de DetalleFactura/AddItem
         console.error('Error al agregar el producto al carrito:', response.statusText);
       }
     } else {
@@ -418,8 +472,8 @@ export default {
   } catch (error) {
     console.error('Error de red:', error);
   }
-},
-
+}
+,
 
     formatCurrency(value) {
       return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
