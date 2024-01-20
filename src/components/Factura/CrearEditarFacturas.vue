@@ -177,113 +177,196 @@ export default {
   },
   methods: {
     async iniciarFacturacion() {
-  try {
-    // Realizar la petición POST a la API
-    const response = await fetch('https://localhost:7083/api/Factura', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        NumeroFactura: this.numeroFactura,
-        RucCliente: this.rucCliente,
-        RazonSocialCliente: this.razonSocialCliente,
-        Subtotal: this.subtotal,
-        PorcentajeIgv: this.porcentajeIgv,
-        IdUsuario: this.idUsuarioFactura,
-      }),
-    });
+      try {
+        // Realizar la petición POST a la API para crear una nueva factura
+        const response = await fetch('https://localhost:7083/api/Factura', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            NumeroFactura: this.numeroFactura,
+            RucCliente: this.rucCliente,
+            RazonSocialCliente: this.razonSocialCliente,
+            Subtotal: this.subtotal,
+            PorcentajeIgv: this.porcentajeIgv,
+            IdUsuario: this.idUsuarioFactura,
+          }),
+        });
 
-    // Verificar si la petición fue exitosa
-    if (response.ok) {
-      // Obtener la respuesta en formato JSON
-      const facturaData = await response.json();
+        // Verificar si la petición fue exitosa
+        if (response.ok) {
+          // Obtener la respuesta en formato JSON
+          const facturaData = await response.json();
 
-      // Asignar el ID de la factura devuelto por la API a la variable facturaId
-      this.facturaId = facturaData.idFactura;
+          // Asignar el ID de la factura devuelto por la API a la variable facturaId
+          this.facturaId = facturaData.idFactura;
 
-      // Resto del código según tus necesidades
-      // Puedes realizar otras acciones según la respuesta de la API
+          // Limpiar la lista de productos y reiniciar el subtotal
+          this.products = [];
+          this.subtotal = 0;
 
-    } else {
-      // Manejar errores de la petición
-      console.error('Error en la petición:', response.statusText);
+        } else {
+          // Manejar errores de la petición
+          console.error('Error en la petición:', response.statusText);
 
-      // Agregar más información del error si está disponible
-      const errorData = await response.json().catch(() => null);
-      console.error('Detalles del error:', errorData);
-    }
-  } catch (error) {
-    console.error('Error al iniciar la facturación:', error);
-  }
-}
-,
+          // Agregar más información del error si está disponible
+          const errorData = await response.json().catch(() => null);
+          console.error('Detalles del error:', errorData);
+        }
+      } catch (error) {
+        console.error('Error al iniciar la facturación:', error);
+      }
+    },
 
     async getProduct() {
       try {
-        const product = {
-          idProducto: this.productId,
-          codigo: 'Código Producto',
-          nombre: 'Nombre Producto',
-          precio: 10,
-          stock: 20,
-        };
+        // Realizar la petición GET a la API de productos para obtener detalles
+        const response = await fetch(`https://localhost:7083/api/Producto/${this.productId}`);
 
-        this.productsToShow = [product];
+        // Verificar si la petición fue exitosa
+        if (response.ok) {
+          // Obtener la respuesta en formato JSON
+          const productData = await response.json();
+
+          // Asignar los detalles del producto a productsToShow
+          this.productsToShow = [productData.resultado];
+        } else {
+          // Manejar errores de la petición
+          console.error('Error al obtener el producto:', response.statusText);
+        }
       } catch (error) {
         console.error('Error de red:', error);
       }
     },
 
-    agregarADetalleFactura() {
-      const productToAdd = this.productsToShow[0];
-      this.products.push({
-        idProducto: productToAdd.idProducto,
-        facturaId: this.facturaId,
-        codigo: productToAdd.codigo,
-        nombre: productToAdd.nombre,
-        idFamilia: 'ID Familia Producto',
-        precio: productToAdd.precio,
-        stock: productToAdd.stock,
-        activo: true,
-        fechaCreacion: 'Fecha de Creación Producto',
-        idUsuario: this.idUsuarioFactura,
-        cantidad: productToAdd.cantidad || 1,
-      });
+    async agregarADetalleFactura() {
+      try {
+        // Verificar si hay productos para agregar al detalle de factura
+        if (this.productsToShow.length > 0) {
+          const productToAdd = this.productsToShow[0];
 
-      this.subtotal += productToAdd.precio;
+          // Realizar la petición POST a la API de DetalleFactura/AddItem
+          const response = await fetch(`https://localhost:7083/api/DetalleFactura/AddItem/${this.facturaId}`, {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              idFactura: this.facturaId,
+              idUsuario: this.idUsuarioFactura,
+              codigoProducto: productToAdd.codigo,
+              cantidad: productToAdd.cantidad || 1,
+            }),
+          });
+
+          // Verificar si la petición fue exitosa
+          if (response.ok) {
+            console.log('Producto agregado al carrito correctamente');
+
+            // Limpiar la lista de productosToShow
+            this.productsToShow = [];
+          } else {
+            // Manejar errores de la petición
+            console.error('Error al agregar el producto al carrito:', response.statusText);
+          }
+        } else {
+          console.error('No hay productos para agregar al carrito.');
+        }
+      } catch (error) {
+        console.error('Error de red:', error);
+      }
     },
 
-    eliminarProducto(index) {
-      this.subtotal -= this.products[index].precio;
-      this.products.splice(index, 1);
+    async eliminarProducto(index) {
+      try {
+        // Obtener el ID del producto a eliminar
+        const productIdToDelete = this.products[index].idProducto;
+
+        // Realizar la petición DELETE a la API de DetalleFactura por ID
+        const response = await fetch(`https://localhost:7083/api/DetalleFactura/${productIdToDelete}`, {
+          method: 'DELETE',
+        });
+
+        // Verificar si la petición fue exitosa
+        if (response.ok) {
+          console.log('Producto eliminado correctamente del carrito');
+
+          // Restar el precio del producto eliminado al subtotal
+          this.subtotal -= this.products[index].precio;
+
+          // Eliminar el producto de la lista
+          this.products.splice(index, 1);
+        } else {
+          // Manejar errores de la petición
+          console.error('Error al eliminar el producto del carrito:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error de red:', error);
+      }
     },
 
-    generarFactura() {
-      const igv = (this.subtotal * this.porcentajeIgv) / 100;
-      const total = this.subtotal + igv;
+    async generarFactura() {
+      try {
+        // Calcular el IGV y el total
+        const igv = (this.subtotal * this.porcentajeIgv) / 100;
+        const total = this.subtotal + igv;
 
-      this.subtotal = this.formatCurrency(this.subtotal);
-      this.porcentajeIgv = this.formatCurrency(igv);
-      this.facturaMostrada = {
-        idFactura: this.facturaId,
-        numeroFactura: this.numeroFactura,
-        rucCliente: this.rucCliente,
-        razonSocialCliente: this.razonSocialCliente,
-        subtotal: this.formatCurrency(this.subtotal),
-        igv: this.formatCurrency(igv),
-        total: this.formatCurrency(total),
-      };
+        // Realizar la petición PUT a la API para actualizar la factura
+        const response = await fetch(`https://localhost:7083/api/Factura/${this.facturaId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            Subtotal: this.subtotal,
+            Igv: igv,
+            Total: total,
+          }),
+        });
+
+        // Verificar si la petición fue exitosa
+        if (response.ok) {
+          console.log('Factura generada correctamente');
+
+          // Formatear montos como moneda
+          this.subtotal = this.formatCurrency(this.subtotal);
+          this.porcentajeIgv = this.formatCurrency(igv);
+
+          // Asignar los datos de la factura generada a facturaMostrada
+          this.facturaMostrada = {
+            idFactura: this.facturaId,
+            numeroFactura: this.numeroFactura,
+            rucCliente: this.rucCliente,
+            razonSocialCliente: this.razonSocialCliente,
+            subtotal: this.formatCurrency(this.subtotal),
+            igv: this.formatCurrency(igv),
+            total: this.formatCurrency(total),
+          };
+        } else {
+          // Manejar errores de la petición
+          console.error('Error al generar la factura:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error al generar la factura:', error);
+      }
     },
 
     async mostrarFactura() {
       try {
+        // Realizar la petición GET a la API para obtener detalles de la factura por ID
         const response = await fetch(`https://localhost:7083/api/Factura/${this.idFacturaMostrar}`);
-        
+
+        // Verificar si la petición fue exitosa
         if (response.ok) {
+          // Obtener la respuesta en formato JSON
           const facturaData = await response.json();
+
+          // Asignar los detalles de la factura a facturaMostrada
           this.facturaMostrada = facturaData;
         } else {
+          // Manejar errores de la petición
           console.error('Error al obtener la factura:', response.statusText);
         }
       } catch (error) {
@@ -291,24 +374,43 @@ export default {
       }
     },
 
-    addItemToFactura(product) {
-      this.products.push({
-        idProducto: product.idProducto,
-        facturaId: this.facturaId,
-        codigo: product.codigo,
-        nombre: product.nombre,
-        idFamilia: 'ID Familia Producto',
-        precio: product.precio,
-        stock: product.stock,
-        activo: true,
-        fechaCreacion: 'Fecha de Creación Producto',
-        idUsuario: this.idUsuarioFactura,
-        cantidad: product.cantidad || 1,
-      });
+    async addItemToFactura(product) {
+      try {
+        // Verificar si hay una factura en proceso
+        if (this.facturaId) {
+          // Realizar la petición POST a la API de DetalleFactura/AddItem
+          const response = await fetch(`https://localhost:7083/api/DetalleFactura/AddItem/${this.facturaId}`, {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              idFactura: this.facturaId,
+              idUsuario: this.idUsuarioFactura,
+              codigoProducto: product.codigo,
+              cantidad: product.cantidad || 1,
+            }),
+          });
 
-      this.subtotal += product.precio;
+          // Verificar si la petición fue exitosa
+          if (response.ok) {
+            console.log('Producto agregado al carrito correctamente');
+
+            // Actualizar subtotal y limpiar la lista de productosToShow
+            this.subtotal += product.precio;
+            this.productsToShow = [];
+          } else {
+            // Manejar errores de la petición
+            console.error('Error al agregar el producto al carrito:', response.statusText);
+          }
+        } else {
+          console.error('No hay una factura en proceso. Inicie la facturación primero.');
+        }
+      } catch (error) {
+        console.error('Error de red:', error);
+      }
     },
-    
 
     formatCurrency(value) {
       return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
