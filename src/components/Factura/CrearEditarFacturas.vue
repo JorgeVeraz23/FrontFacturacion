@@ -172,8 +172,17 @@ export default {
         subtotal: null,
         igv: null,
         total: null,
+        idUsuario: null,
       }
-    }
+    };},
+  created() {
+    // Llamar al método para obtener la última factura al cargar el componente
+    this.obtenerUltimaFactura();
+
+    // Configurar un temporizador para actualizar la última factura cada segundo
+    /*setInterval(() => {
+      this.obtenerUltimaFactura();
+    }, 1000); // 1000 milisegundos = 1 segundo*/
   },
   methods: {
     async iniciarFacturacion() {
@@ -239,7 +248,37 @@ export default {
         console.error('Error de red:', error);
       }
     },
+    async obtenerUltimaFactura() {
+  try {
+    // Realizar la petición GET a la API para obtener la última factura
+    const response = await fetch('https://localhost:7083/api/Factura/UltimaFactura');
 
+    // Verificar si la petición fue exitosa
+    if (response.ok) {
+      // Obtener la respuesta en formato JSON
+      const facturaData = await response.json();
+      if (facturaData) {
+  console.log(facturaData);
+  console.log(facturaData.idFactura)
+} else {
+  console.log('No se encontró una factura');
+}
+if (facturaData) {
+  this.facturaData = facturaData;
+} else {
+  this.facturaData = null;
+}
+      // Devolver la factura
+      return facturaData;
+    } else {
+      // Devolver null si no se encuentra la factura
+      return null;
+    }
+  } catch (error) {
+    console.error('Error al obtener la última factura:', error);
+    return null;
+  }
+},
     async agregarADetalleFactura() {
       try {
         // Verificar si hay productos para agregar al detalle de factura
@@ -374,43 +413,54 @@ export default {
       }
     },
 
-    async addItemToFactura(product) {
-      try {
-        // Verificar si hay una factura en proceso
-        if (this.facturaId) {
-          // Realizar la petición POST a la API de DetalleFactura/AddItem
-          const response = await fetch(`https://localhost:7083/api/DetalleFactura/AddItem/${this.facturaId}`, {
-            method: 'POST',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              idFactura: this.facturaId,
-              idUsuario: this.idUsuarioFactura,
-              codigoProducto: product.codigo,
-              cantidad: product.cantidad || 1,
-            }),
-          });
+    // Modify the `addItemToFactura` method to ensure factura is initiated
+async addItemToFactura(product) {
+  // Obtener la última factura
+  const ultimaFactura = await this.obtenerUltimaFactura();
+if (ultimaFactura) {
+  this.ultimaFactura = ultimaFactura;
+} else {
+  this.ultimaFactura = null;
+}
+  this.ultimaFactura 
+  try {
 
-          // Verificar si la petición fue exitosa
-          if (response.ok) {
-            console.log('Producto agregado al carrito correctamente');
+    // Verificar nuevamente si hay una factura después de iniciar la facturación
+    if (this.ultimaFactura) {
+      // Realizar la petición POST a la API de DetalleFactura/AddItem
+      const response = await fetch(`https://localhost:7083/api/DetalleFactura/AddItem/${this.facturaId}`, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          idFactura: this.ultimaFactura.idFactura,
+          idUsuario: this.ultimaFactura.idUsuario,
+          codigoProducto: product.codigo,
+          cantidad: product.cantidad || 1,
+        }),
+      });
 
-            // Actualizar subtotal y limpiar la lista de productosToShow
-            this.subtotal += product.precio;
-            this.productsToShow = [];
-          } else {
-            // Manejar errores de la petición
-            console.error('Error al agregar el producto al carrito:', response.statusText);
-          }
-        } else {
-          console.error('No hay una factura en proceso. Inicie la facturación primero.');
-        }
-      } catch (error) {
-        console.error('Error de red:', error);
+      // Verificar si la petición fue exitosa
+      if (response.ok) {
+        console.log('Producto agregado al carrito correctamente');
+
+        // Actualizar subtotal y limpiar la lista de productosToShow
+        this.subtotal += product.precio;
+        this.productsToShow = [];
+      } else {
+        // Manejar errores de la petición
+        console.error('Error al agregar el producto al carrito:', response.statusText);
       }
-    },
+    } else {
+      console.error('No se pudo iniciar la facturación. Verifique y vuelva a intentar.');
+    }
+  } catch (error) {
+    console.error('Error de red:', error);
+  }
+},
+
 
     formatCurrency(value) {
       return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
