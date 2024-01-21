@@ -337,37 +337,38 @@ async ultimoDetalleFacturaId() {
     },
     
     async eliminarDetalleFactura(idItem, index) {
-    try {
-      // Realizar la petición DELETE a la API de DetalleFactura por ID
-      const response = await fetch(`https://localhost:7083/api/DetalleFactura/${idItem}`, {
-        method: 'DELETE',
+  try {
+    // Realizar la petición DELETE a la API de DetalleFactura por ID
+    const response = await fetch(`https://localhost:7083/api/DetalleFactura/${idItem}`, {
+      method: 'DELETE',
+    });
+
+    // Verificar si la petición fue exitosa
+    if (response.ok) {
+      console.log('Producto eliminado correctamente del carrito');
+
+      // Obtener el precio del producto eliminado
+      const precioProductoEliminado = this.productosEnCarrito[index].subtotal;
+
+      // Restar el precio del producto eliminado al totalSubtotal
+      this.totalSubtotal -= precioProductoEliminado;
+
+      // Eliminar el producto de la lista
+      this.productosEnCarrito.splice(index, 1);
+
+      // Actualizar la vista de manera reactiva
+      this.$nextTick(() => {
+        // No es necesario hacer nada aquí, pero $nextTick asegura que la vista se ha actualizado.
       });
-
-      // Verificar si la petición fue exitosa
-      if (response.ok) {
-        console.log('Producto eliminado correctamente del carrito');
-
-        // Obtener el precio del producto eliminado
-        const precioProductoEliminado = this.productosEnCarrito[index].subtotal;
-
-        // Restar el precio del producto eliminado al subtotal
-        this.subtotal -= precioProductoEliminado;
-
-        // Eliminar el producto de la lista
-        this.productosEnCarrito.splice(index, 1);
-
-        // Actualizar la vista de manera reactiva
-        this.$nextTick(() => {
-          // No es necesario hacer nada aquí, pero $nextTick asegura que la vista se ha actualizado.
-        });
-      } else {
-        // Manejar errores de la petición
-        console.error('Error al eliminar el producto del carrito:', response.statusText);
-      }
-    } catch (error) {
-      console.error('Error al eliminar el producto del carrito:', error);
+    } else {
+      // Manejar errores de la petición
+      console.error('Error al eliminar el producto del carrito:', response.statusText);
     }
-  },
+  } catch (error) {
+    console.error('Error al eliminar el producto del carrito:', error);
+  }
+},
+
 
 
     async generarFactura() {
