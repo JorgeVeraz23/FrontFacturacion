@@ -71,6 +71,7 @@
       <th>Cantidad</th>
       <th>Precio/u</th>
       <th>SubTotal</th>
+      <th>IdItem</th>
       <!-- Agrega más columnas según sea necesario -->
     </tr>
   </thead>
@@ -81,6 +82,12 @@
       <td>{{ producto.cantidad }}</td>
       <td>{{ producto.precio }}</td>
       <td>{{ producto.subtotal }}</td>
+      <td>{{ producto.idItem }}</td>
+      <td>
+        <button @click="eliminarDetalleFactura(producto.idItem, index)" v-if="producto && producto.idItem">Eliminar Producto</button>
+</td>
+    
+
       <!-- Agrega más columnas según sea necesario -->
     </tr>
   </tbody>
@@ -195,6 +202,7 @@ export default {
       }
     };},
   methods: {
+    
     async ultimaFactura1() {
   try {
     // Realizar la petición GET
@@ -318,15 +326,10 @@ async ultimoDetalleFacturaId() {
       } catch (error) {
         console.error('Error de red:', error);
       }
-    },
-
-    async eliminarProducto(index) {
+    },async eliminarDetalleFactura(idItem, index) {
       try {
-        // Obtener el ID del producto a eliminar
-        const productIdToDelete = this.products[index].idProducto;
-
         // Realizar la petición DELETE a la API de DetalleFactura por ID
-        const response = await fetch(`https://localhost:7083/api/DetalleFactura/${productIdToDelete}`, {
+        const response = await fetch(`https://localhost:7083/api/DetalleFactura/${idItem}`, {
           method: 'DELETE',
         });
 
@@ -335,10 +338,10 @@ async ultimoDetalleFacturaId() {
           console.log('Producto eliminado correctamente del carrito');
 
           // Restar el precio del producto eliminado al subtotal
-          this.subtotal -= this.products[index].precio;
+          this.subtotal -= this.productosEnCarrito[index].subtotal;
 
           // Eliminar el producto de la lista
-          this.products.splice(index, 1);
+          this.productosEnCarrito.splice(index, 1);
         } else {
           // Manejar errores de la petición
           console.error('Error al eliminar el producto del carrito:', response.statusText);
@@ -434,7 +437,7 @@ async ultimoDetalleFacturaId() {
         nombreProducto: productToAdd.nombre,
         cantidad: productToAdd.cantidad || 1,
       });
-
+    
       // Verificar si la petición fue exitosa
       if (response.status === 201) {
         console.log('Producto agregado al carrito correctamente');
@@ -450,6 +453,9 @@ async ultimoDetalleFacturaId() {
             // Asignar el subtotal del producto al objeto en productosEnCarrito
             const subtotal = detalleFactura.subtotal;
             productToAdd.subtotal = subtotal;
+
+            const idItem = detalleFactura.idItem;
+            productToAdd.idItem = idItem;
 
             // Agregar el producto al array productosEnCarrito
             this.productosEnCarrito.push(productToAdd);
