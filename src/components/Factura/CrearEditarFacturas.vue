@@ -200,6 +200,51 @@ export default {
       }
     };},
   methods: {
+    async iniciarFacturacion() {
+      try {
+        // Realizar la petición POST a la API
+        const response = await fetch('https://localhost:7083/api/Factura', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            NumeroFactura: this.numeroFactura,
+            RucCliente: this.rucCliente,
+            RazonSocialCliente: this.razonSocialCliente,
+            Subtotal: 0,  // Inicializar el subtotal en 0 al iniciar la factura
+            PorcentajeIgv: this.porcentajeIgv,
+            IdUsuario: this.idUsuarioFactura,
+          }),
+        });
+
+        // Verificar si la petición fue exitosa
+        if (response.ok) {
+          // Obtener la respuesta en formato JSON
+          const facturaData = await response.json();
+
+          // Asignar el ID de la factura devuelto por la API a la variable facturaId
+          this.facturaId = facturaData.idFactura;
+
+          // Limpiar la lista de productos y reiniciar el subtotal
+          this.products = [];
+          this.subtotal = 0;
+
+          // Resto del código según tus necesidades
+          // Puedes realizar otras acciones según la respuesta de la API
+
+        } else {
+          // Manejar errores de la petición
+          console.error('Error en la petición:', response.statusText);
+
+          // Agregar más información del error si está disponible
+          const errorData = await response.json().catch(() => null);
+          console.error('Detalles del error:', errorData);
+        }
+      } catch (error) {
+        console.error('Error al iniciar la facturación:', error);
+      }
+    },
     
     async ultimaFactura1() {
   try {
