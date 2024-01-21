@@ -92,47 +92,9 @@
     </tr>
   </tbody>
 </table>
-
-
-    <!-- Tabla para mostrar productos seleccionados -->
-    <table v-if="products.length > 0">
-      <!-- Cabecera de la tabla --> 
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>ID Producto</th>
-          <th>ID Factura</th>
-          <th>Código</th>
-          <th>Nombre</th>
-          <th>ID Familia</th>
-          <th>Precio</th>
-          <th>Stock</th>
-          <th>Activo</th>
-          <th>Fecha de Creación</th>
-          <th>ID Usuario</th>
-          <th>Cantidad</th>
-          <th>Acción</th>
-        </tr>
-      </thead>
-      <!-- Cuerpo de la tabla -->
-      <tbody>
-        <tr v-for="(product, index) in products" :key="product.idProducto">
-          <td>{{ index + 1 }}</td>
-          <td>{{ product.idProducto }}</td>
-          <td>{{ ultimaFactura.idFactura }}</td>
-          <td>{{ product.codigo }}</td>
-          <td>{{ product.nombre }}</td>
-          <td>{{ product.idFamilia }}</td>
-          <td>{{ product.precio }}</td>
-          <td>{{ product.stock }}</td>
-          <td>{{ product.activo }}</td>
-          <td>{{ product.fechaCreacion }}</td>
-          <td>{{ product.idUsuario }}</td>
-          <td><span>{{ product.cantidad }}</span></td>
-          
-        </tr>
-      </tbody>
-    </table>
+<div>
+  <p>Total Subtotal: {{ formatCurrency(totalSubtotal) }}</p>
+</div>
 
     <!-- Sección para generar factura -->
     <div>
@@ -195,6 +157,7 @@ export default {
       idFacturaMostrar: null,
       facturaMostrada: null,
       productosEnCarrito: [],
+      totalSubtotal: 0,
       ultimaFactura: {
         idFactura: 1,
       }
@@ -202,6 +165,8 @@ export default {
   methods: {
     async iniciarFacturacion() {
       try {
+
+        
         // Realizar la petición POST a la API
         const response = await fetch('https://localhost:7083/api/Factura', {
           method: 'POST',
@@ -246,7 +211,7 @@ export default {
       }
     },
     
-    async ultimaFactura1() {
+    async ultimaFactura1( ) {
   try {
     // Realizar la petición GET
     const response = await axios.get("https://localhost:7083/api/Factura/ultimaFactura");
@@ -406,22 +371,24 @@ async ultimoDetalleFacturaId() {
 
 
     async generarFactura() {
-      try {
+/*
+        const [idFactura, idUsuario] = await this.ultimaFactura1();
+        const producToPut = this.productsToShow[0];
         // Calcular el IGV y el total
-        const igv = (this.subtotal * this.porcentajeIgv) / 100;
-        const total = this.subtotal + igv;
-
+        //const igv = (this.subtotal * this.porcentajeIgv) / 100;
+        //const total = this.subtotal + igv;
+        const facturaResponse = await axios.get(`https://localhost:7083/api/Factura/${idFactura}`);
+        const factura = facturaResponse.data.resultado;
+        const numeroFactura = factura.numeroFactura;
         // Realizar la petición PUT a la API para actualizar la factura
-        const response = await fetch(`https://localhost:7083/api/Factura/${this.facturaId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
+        const response = await axios.put(`https://localhost:7083/api/Factura/${idFactura}`, {
+            idFactura: idFactura,
+            numeroFactura: numeroFactura,
             Subtotal: this.subtotal,
             Igv: igv,
             Total: total,
-          }),
+            idUsuario: idUsuario
+          
         });
 
         // Verificar si la petición fue exitosa
@@ -446,10 +413,8 @@ async ultimoDetalleFacturaId() {
           // Manejar errores de la petición
           console.error('Error al generar la factura:', response.statusText);
         }
-      } catch (error) {
-        console.error('Error al generar la factura:', error);
-      }
-    },
+      
+      */},
 
     async mostrarFactura() {
       try {
@@ -491,7 +456,7 @@ async ultimoDetalleFacturaId() {
         nombreProducto: productToAdd.nombre,
         cantidad: productToAdd.cantidad || 1,
       });
-    
+
       // Verificar si la petición fue exitosa
       if (response.status === 201) {
         console.log('Producto agregado al carrito correctamente');
@@ -501,7 +466,7 @@ async ultimoDetalleFacturaId() {
           // Obtener el detalle del producto después de agregarlo al carrito
           try {
             // Realizar la petición GET a la API de DetalleFactura para obtener el detalle actualizado
-            const detalleFacturaResponse = await axios.get(`https://localhost:7083/api/DetalleFactura/${detalleFacturaId+1}`);
+            const detalleFacturaResponse = await axios.get(`https://localhost:7083/api/DetalleFactura/${detalleFacturaId + 1}`);
             const detalleFactura = detalleFacturaResponse.data.resultado;
 
             // Asignar el subtotal del producto al objeto en productosEnCarrito
@@ -513,6 +478,10 @@ async ultimoDetalleFacturaId() {
 
             // Agregar el producto al array productosEnCarrito
             this.productosEnCarrito.push(productToAdd);
+
+            // Actualizar el totalSubtotal sumando el nuevo subtotal
+            this.totalSubtotal += subtotal;
+
           } catch (error) {
             console.error('Error al obtener el detalle de factura:', error);
           }
