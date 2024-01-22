@@ -1,109 +1,68 @@
 <template>
   <div>
-    <!-- Cabecera de la factura -->
-    <div>
-      <label>Id Usuario:</label>
-      <input v-model="factura.idUsuario" />
-      <label>Id Factura:</label>
-      <input v-model="factura.idFactura" disabled />
-      <label>Número de Factura:</label>
-      <input v-model="factura.numeroFactura" />
-      <label>Ruc del cliente:</label>
-      <input v-model="factura.rucCliente" />
-      <label>Razón social del cliente:</label>
-      <input v-model="factura.razonSocialCliente" />
-      <label>Subtotal:</label>
-      <input v-model="factura.subtotal" />
-      <label>Porcentaje de IGV:</label>
-      <input v-model="factura.porcentajeIGV" />
-      <label>IGV:</label>
-      <input v-model="factura.igv" disabled />
-      <label>Total:</label>
-      <input v-model="factura.total" disabled />
-    </div>
-
-    <!-- Detalle de la factura -->
-    <div>
-      <table>
-        <thead>
-          <tr>
-            <th>Id Item</th>
-            <th>Código de Producto</th>
-            <th>Nombre del Producto</th>
-            <th>Precio</th>
-            <th>Cantidad</th>
-            <th>Subtotal</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(item, index) in factura.detalle" :key="index">
-            <td>{{ item.idItem }}</td>
-            <td><input v-model="item.codigoProducto" /></td>
-            <td><input v-model="item.nombreProducto" /></td>
-            <td><input v-model="item.precio" /></td>
-            <td><input v-model="item.cantidad" /></td>
-            <td><input v-model="item.subtotal" disabled /></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Botones para LISTAR, CREAR, ELIMINAR -->
-    <div>
-      <button @click="listarFacturas">Listar Facturas</button>
-      <button @click="crearFactura">Crear Factura</button>
-      <button @click="eliminarFactura">Eliminar Factura</button>
-    </div>
+    <h2>Listar Facturas</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>id Factura</th>
+          <th>numero Factura</th>
+          <th>ruc Cliente</th>
+          <th>razonSocialCliente</th>
+          <th>subtotal</th>
+          <th>porcentaje Igv</th>
+          <th>igv</th>
+          <th>total</th>
+          <th>ID Usuario</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="facturita in facturitas" :key="facturita.idFactura">
+          <td>{{ facturita.idFactura }}</td>
+          <td>{{ facturita.numeroFactura }}</td>
+          <td>{{ facturita.rucCliente }}</td>
+          <td>{{ facturita.razonSocialCliente }}</td>
+          <td>{{ facturita.subtotal }}</td>
+          <td>{{ facturita.porcentajeIgv }}</td>
+          <td>{{ facturita.igv }}</td>
+          <td>{{ facturita.total }}</td>
+          <td>{{ facturita.idUsuario }}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
-      factura: {
-        idUsuario: null,
-        idFactura: null,
-        numeroFactura: '',
-        rucCliente: '',
-        razonSocialCliente: '',
-        subtotal: null,
-        porcentajeIGV: null,
-        igv: null,
-        total: null,
-        detalle: [
-          {
-            idItem: null,
-            codigoProducto: '',
-            nombreProducto: '',
-            precio: null,
-            cantidad: null,
-            subtotal: null
-          }
-        ]
-      }
+      facturitas: [],
     };
   },
   methods: {
-    listarFacturas() {
-      // Lógica para listar facturas
+    async mostrarFactura() {
+      try {
+        const response = await axios.get('https://localhost:7083/api/Factura/');
+        console.log('Código de estado HTTP:', response.status);
+
+        const data = response.data;
+        console.log('Datos de facturas:', data);
+
+        this.facturitas = data.resultado;
+      } catch (error) {
+        console.error('Error al obtener facturas:', error.message);
+      }
     },
-    crearFactura() {
-      // Lógica para crear factura
-    },
-    eliminarFactura() {
-      // Lógica para eliminar factura
-    }
-  }
+  },
+  mounted() {
+    console.log('Componente montado');
+    this.mostrarFactura();
+  },
 };
 </script>
 
-
 <style scoped>
-/* Estilos específicos del componente aquí... */
-</style>
-
-
-<style scoped>
-/* Estilos específicos del componente aquí... */
+  /* Estilos específicos del componente aquí... */
 </style>

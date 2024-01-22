@@ -92,6 +92,7 @@
     </tr>
   </tbody>
 </table>
+
 <div>
   <p>Total Subtotal: {{ formatCurrency(totalSubtotal) }}</p>
 </div>
@@ -102,80 +103,87 @@
       <button @click="generarFactura">Generar Factura</button>
     </div>
 
-    <div>
-    <label for="idFacturaMostrar">ID de la Factura a Mostrar:</label>
-    <input v-model="idFacturaMostrar" type="number" id="idFacturaMostrar" />
-
-    <!-- Botón para mostrar la factura y detalles de factura -->
-    <button @click="mostrarFacturaYDetalles">Mostrar Factura y Detalles</button>
-  </div>
-
-  <!-- Tabla para mostrar factura y detalles de factura -->
-  <table v-if="facturaMostrada && detallesFacturaMostrados.length > 0">
-
-    <thead>
-      <tr>
-        <th>ID Factura</th>
-        <th>Número de Factura</th>
-        <th>RUC Cliente</th>
-        <th>Razón Social Cliente</th>
-        <th>Subtotal</th>
-        <th>IGV</th>
-        <th>Total</th>
-        <!-- Agrega más columnas según sea necesario -->
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>{{ facturaMostrada.idFactura }}</td>
-        <td>{{ facturaMostrada.numeroFactura }}</td>
-        <td>{{ facturaMostrada.rucCliente }}</td>
-        <td>{{ facturaMostrada.razonSocialCliente }}</td>
-        <td>{{ facturaMostrada.subtotal }}</td>
-        <td>{{ facturaMostrada.igv }}</td>
-        <td>{{ facturaMostrada.total }}</td>
-        <!-- Agrega más columnas según sea necesario -->
-      </tr>
-      <tr v-for="(detalle, index) in detallesFacturaMostrados" :key="index">
-        <td>{{ detalle.codigo }}</td>
-        <td>{{ detalle.nombre }}</td>
-        <td>{{ detalle.cantidad }}</td>
-        <td>{{ detalle.precio }}</td>
-        <td>{{ detalle.subtotal }}</td>
-        <td>{{ detalle.idItem }}</td>
-        <!-- Agrega más columnas según sea necesario -->
-      </tr>
-    </tbody>
-  </table>
-
-
-    <!-- Tabla para mostrar factura -->
-    <table v-if="facturaMostrada">
+    
+    <!--<table>
       <thead>
         <tr>
-          <th>ID Factura</th>
-          <th>Número de Factura</th>
-          <th>RUC Cliente</th>
-          <th>Razón Social Cliente</th>
-          <th>Subtotal</th>
-          <th>IGV</th>
-          <th>Total</th>
+          <th>id Factura</th>
+          <th>numero Factura</th>
+          <th>ruc Cliente</th>
+          <th>razonSocialCliente</th>
+          <th>subtotal</th>
+          <th>porcentaje Igv</th>
+          <th>igv</th>
+          <th>total</th>
+          <th>ID Usuario</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>{{ facturaMostrada.idFactura }}</td>
-          <td>{{ facturaMostrada.numeroFactura }}</td>
-          <td>{{ facturaMostrada.rucCliente }}</td>
-          <td>{{ facturaMostrada.razonSocialCliente }}</td>
-          <td>{{ facturaMostrada.subtotal }}</td>
-          <td>{{ facturaMostrada.igv }}</td>
-          <td>{{ facturaMostrada.total }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <tr v-for="facturita in facturitas" :key="facturita.idFactura">
+      <td>{{ facturita.idFactura }}</td>
+      <td>{{ facturita.numeroFactura }}</td>
+      <td>{{ facturita.rucCliente }}</td>
+      <td>{{ facturita.razonSocialCliente }}</td>
+      <td>{{ facturita.subtotal }}</td>
+      <td>{{ facturita.porcentajeIgv }}</td>
+      <td>{{ facturita.igv }}</td>
+      <td>{{ facturita.total }}</td>
+      <td>{{ facturita.idUsuario }}</td>
+    </tr>
+    <tr v-if="facturitas.length === 0">
+      <td colspan="9" class="text-center">No hay facturas disponibles.</td>
+    </tr>
+  </tbody>
+  
+</table>-->
+  <!-- Sección para mostrar detalles de la factura -->
+<div v-if="facturaMostrada">
+  <!--<h2>Detalles de la Factura</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>ID Producto</th>
+        <th>Cantidad</th>
+        <th>Precio/u</th>
+        <th>SubTotal</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="(detalle, index) in detallesFacturaMostrados" :key="index">
+        <td>{{ detalle.codigoProducto }}</td>
+        <td>{{ detalle.cantidad }}</td>
+        <td>{{ detalle.precio }}</td>
+        <td>{{ detalle.subtotal }}</td>
+      </tr>
+    </tbody>
+  </table>-->
+
+  <!-- Sección para mostrar detalles de la factura -->
+<div v-if="facturaMostrada">
+  <h2>Detalles de la Factura</h2>
+
+  <div v-if="facturaMostrada.idProducto !== undefined">
+    <p>ID Producto: {{ facturaMostrada.idProducto }}</p>
+    <p>Cantidad: {{ facturaMostrada.cantidad }}</p>
+    <p>Precio/u: {{ facturaMostrada.precio }}</p>
+    <p>SubTotal: {{ formatCurrency(facturaMostrada.subtotal) }}</p>
   </div>
-</template>
+
+  <div>
+    <p>Total Subtotal: {{ formatCurrency(facturaMostrada.subtotal) }}</p>
+    <p>Porcentaje IGV: {{ facturaMostrada.porcentajeIgv }}%</p>
+    <p>Total IGV: {{ formatCurrency(facturaMostrada.igv) }}</p>
+    <p>Total Factura: {{ formatCurrency(facturaMostrada.total) }}</p>
+  </div>
+</div>
+
+</div>
+
+
+</div>
+
+  
+</template> 
 
 <script>
 import axios from 'axios';
@@ -187,6 +195,7 @@ export default {
       productId: null,
       products: [],
       productsToShow: [],
+      productsToShow2: [],
       numeroFactura: null,
       rucCliente: '',
       razonSocialCliente: '',
@@ -195,6 +204,7 @@ export default {
       idUsuarioFactura: null,
       idFacturaMostrar: null,
       facturaMostrada: null,
+      facturitas: [],
       productosEnCarrito: [],
       detallesFacturaMostrados: [],
       totalSubtotal: 0,
@@ -389,40 +399,49 @@ export default {
   }
 },
 
+async obtenerFacturaPorUltimoId() {
+  try {
+    const [idFactura, idUsuario] = await this.ultimaFactura1();
+    console.log(idUsuario);
+    const response = await axios.get(`https://localhost:7083/api/Factura/${idFactura}`);
 
-    async mostrarFactura() {
-      try {
-        const response = await fetch(`https://localhost:7083/api/Factura/${this.idFacturaMostrar}`);
-        if (response.ok) {
-          const facturaData = await response.json();
-          this.facturaMostrada = facturaData;
-        } else {
-          console.error('Error al obtener la factura:', response.statusText);
-        }
-      } catch (error) {
-        console.error('Error al mostrar la factura:', error);
-      }
-    },
-    async mostrarFacturaYDetalles() {
-      try {
-        // Realiza una petición para obtener la factura por el ID
-        const responseFactura = await fetch(`https://localhost:7083/api/Factura/${this.idFacturaMostrar}`);
-        const facturaData = await responseFactura.json();
-        this.facturaMostrada = facturaData;
+    if (response.status === 200) {
+      this.facturaMostrada = response.data.resultado;
+      // Si tienes detalles de factura que deseas mostrar, puedes cargarlos aquí
+      // Ejemplo: this.detallesFacturaMostrados = await this.obtenerDetallesFactura(idFactura);
+    } else {
+      console.error('Error al obtener factura:', response.statusText);
+    }
+  } catch (error) {
+    console.error('Error al obtener factura:', error);
+  }
+},
+async obtenerDetallesFactura(idFactura) {
+  try {
+    const response = await axios.get(`https://localhost:7083/api/DetalleFactura/porFactura/${idFactura}`);
 
-// Realiza una petición para obtener los detalles de factura por el ID de la factura
-        const responseDetalles = await fetch(`https://localhost:7083/api/DetalleFactura/${this.idFacturaMostrar}`);
-        const detallesData = await responseDetalles.json();
-        this.detallesFacturaMostrados = detallesData.resultado;
+    if (response.status === 200) {
+      return response.data.resultado;
+    } else {
+      console.error('Error al obtener detalles de factura:', response.statusText);
+      return [];
+    }
+  } catch (error) {
+    console.error('Error al obtener detalles de factura:', error);
+    return [];
+  }
+},
 
-      } catch (error) {
-        console.error('Error al mostrar la factura y detalles:', error);
-      }
-    },
+
 
     formatCurrency(value) {
       return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
     },
   },
+  mounted() {
+    console.log('Componente montado');
+    this.obtenerFacturaPorUltimoId();
+  }
+ 
 };
 </script>
