@@ -27,7 +27,7 @@
     <label for="productId">ID del Producto:</label>
     <input v-model="productId" type="number" id="productId" />
 
-    <button @click="getProduct">Obtener Producto</button>
+    <button @click="getProduct">Buscar Producto</button>
 
     <!-- Tabla para mostrar productos -->
     <table v-if="productsToShow.length > 0" class="glassmorphism">
@@ -114,32 +114,7 @@
         <p>Total Factura: {{ formatCurrency(facturaMostrada.total) }}</p>
       </div>
       <div>
-        <!--<table>
-      <thead>
-        <tr>
-          <th>ID Item</th>
-          <th>ID Factura</th>
-          <th>ID Usuario</th>
-          <th>Codigo Producto</th>
-          <th>Nombre Producto</th>
-          <th>Precio</th>
-          <th>Cantidad</th>
-          <th>SubTotal</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="detalle in detallesFacturaMostrada" :key="detalle.idItem">
-          <td>{{ detalle.idItem }}</td>
-          <td>{{ detalle.idFactura }}</td>
-          <td>{{ detalle.idUsuario }}</td>
-          <td>{{ detalle.codigoProducto }}</td>
-          <td>{{ detalle.nombreProducto }}</td>
-          <td>{{ detalle.precio }}</td>
-          <td>{{ detalle.cantidad }}</td>
-          <td>{{ detalle.subtotal }}</td>
-        </tr>
-      </tbody>
-    </table>-->
+       
       </div>
   </div>
 </template>
@@ -154,11 +129,11 @@ export default {
       products: [],
       productsToShow: [],
       productsToShow2: [],
-      numeroFactura: null,
       rucCliente: '',
       razonSocialCliente: '',
       subtotal: 0,
       porcentajeIgv: 12,
+      numeroFactura: `${Math.floor(Math.random() * 1000000000)}`.padStart(9, '0'),
       idUsuarioFactura: null,
       idFacturaMostrar: null,
       facturaMostrada: null,
