@@ -30,6 +30,36 @@
       </tbody>
     </table>
   </div>
+  <div class="glassmorphism">
+    <h2>Detalles de Facturas</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ID Item</th>
+          <th>ID Factura</th>
+          <th>ID Usuario</th>
+          <th>Codigo Producto</th>
+          <th>Nombre Producto</th>
+          <th>Precio</th>
+          <th>Cantidad</th>
+          <th>SubTotal</th>
+          <th>ID Usuario</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="detallito in detallitos" :key="detallito.idFactura">
+          <td>{{ detallito.idItem }}</td>
+          <td>{{ detallito.idFactura }}</td>
+          <td>{{ detallito.idUsuario }}</td>
+          <td>{{ detallito.codigoProducto }}</td>
+          <td>{{ detallito.nombreProducto }}</td>
+          <td>{{ detallito.precio }}</td>
+          <td>{{ detallito.cantidad }}</td>
+          <td>{{ detallito.subtotal }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script>
@@ -39,6 +69,7 @@ export default {
   data() {
     return {
       facturitas: [],
+      detallitos: []
     };
   },
   methods: {
@@ -55,10 +86,20 @@ export default {
         console.error('Error al obtener facturas:', error.message);
       }
     },
+    async obtenerDetallesFactura() {
+      try {
+        const response = await axios.get('https://localhost:7083/api/DetalleFactura');
+        const data = response.data.resultado;
+        this.detallitos = data;
+      } catch (error) {
+        console.error('Error al obtener detalles de factura:', error);
+      }
+    },
   },
   mounted() {
     console.log('Componente montado');
     this.mostrarFactura();
+    this.obtenerDetallesFactura();
   },
 };
 </script>
