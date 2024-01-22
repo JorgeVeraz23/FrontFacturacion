@@ -1,8 +1,8 @@
 <template>
- <img src="hhttps://imgur.com/a/W91xgq7" alt="Logo Violeta" class="logo" />
+ 
   <div class="login-container">
    
-
+    <img src="https://i.ibb.co/F7HJRPs/logo-violeta.png" alt="Logo Violeta" class="logo" />
     <div class="glassmorphic login-form">
       <h2>Iniciar Sesión</h2>
       <label for="usuario">Usuario:</label>
@@ -127,5 +127,11 @@ button {
 button:hover {
   background-color: #483d8b; /* DarkSlateBlue, color más oscuro al pasar el ratón */
 }
-
+img {
+    max-width: 20%;
+    height: auto;
+    margin-bottom: 20px;
+    border-top-left-radius: 100px; /* Ajusta el valor según sea necesario */
+    border-bottom-left-radius: 100px; /* Ajusta el valor según sea necesario */
+  }
 </style>
