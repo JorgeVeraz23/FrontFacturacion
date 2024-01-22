@@ -250,6 +250,8 @@ button {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  background-color: #f0f0f0; /* Gris claro o cualquier otro color */
+  color: #333;
 }
 
 button:hover {

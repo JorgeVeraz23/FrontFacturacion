@@ -97,7 +97,7 @@ export default {
 label {
   display: block;
   margin-bottom: 10px;
-  color: #333;
+  color: #040404;
   font-weight: 600;
 }
 

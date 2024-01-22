@@ -113,14 +113,33 @@
         <p>Total IGV: {{ formatCurrency(facturaMostrada.igv) }}</p>
         <p>Total Factura: {{ formatCurrency(facturaMostrada.total) }}</p>
       </div>
-      <h3>Detalles de la factura</h3>
-      <div v-for="(detalle, index) in detallesFacturaMostrada" :key="index">
-        <p>Id Item: {{ detalle.idItem }}</p>
-        <p>Codigo Producto: {{ detalle.codigoProducto }}</p>
-        <p>Nombre Producto: {{ detalle.nombreProducto }}</p>
-        <p>Precio: {{ formatCurrency(detalle.precio) }}</p>
-        <p>Cantidad: {{ detalle.cantidad }}</p>
-        <p>Subtotal: {{ formatCurrency(detalle.subtotal) }}</p>
+      <div>
+        <!--<table>
+      <thead>
+        <tr>
+          <th>ID Item</th>
+          <th>ID Factura</th>
+          <th>ID Usuario</th>
+          <th>Codigo Producto</th>
+          <th>Nombre Producto</th>
+          <th>Precio</th>
+          <th>Cantidad</th>
+          <th>SubTotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="detalle in detallesFacturaMostrada" :key="detalle.idItem">
+          <td>{{ detalle.idItem }}</td>
+          <td>{{ detalle.idFactura }}</td>
+          <td>{{ detalle.idUsuario }}</td>
+          <td>{{ detalle.codigoProducto }}</td>
+          <td>{{ detalle.nombreProducto }}</td>
+          <td>{{ detalle.precio }}</td>
+          <td>{{ detalle.cantidad }}</td>
+          <td>{{ detalle.subtotal }}</td>
+        </tr>
+      </tbody>
+    </table>-->
       </div>
   </div>
 </template>
@@ -143,10 +162,9 @@ export default {
       idUsuarioFactura: null,
       idFacturaMostrar: null,
       facturaMostrada: null,
-      detalleFacturaMostrada: null,
       facturitas: [],
       productosEnCarrito: [],
-      detallesFacturaMostrados: [],
+      detallesFacturaMostrada: null,
       totalSubtotal: 0,
       ultimaFactura: {
         idFactura: 1,
@@ -336,9 +354,11 @@ export default {
       
     } else {
       console.error('Error al generar la factura:', response.statusText);
+      location.reload();
     }
   } catch (error) {
     console.error('Error al generar la factura:', error);
+    
   }
 },
 
@@ -363,8 +383,9 @@ async obtenerDetallesFactura() {
   try {
     const [idFactura, idUsuario] = await this.ultimaFactura1();
     console.log(idUsuario);
+    console.log(idFactura)
     
-    const response = await axios.get(`https://localhost:7083/api/DetalleFactura/BuscarPorIdFactura/${idFactura}`)
+    const response = await axios.get(`https://localhost:7083/api/DetalleFactura/BuscarPorIdFactura/${77}`)
     if (response.status === 200) {
       this.detallesFacturaMostrada = response.data.resultado;
     } else {
@@ -426,6 +447,8 @@ async obtenerDetallesFactura() {
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    background-color: #f0f0f0; /* Gris claro o cualquier otro color */
+  color: #333; /* Color de texto para contraste */
   }
 
   button:hover {
@@ -447,6 +470,9 @@ async obtenerDetallesFactura() {
   th {
     background-color: #3498dbcc;
     color: white;
+    background-color: #f0f0f0; /* Gris claro o cualquier otro color */
+  color: #333; /* Color de texto para contraste */
+    
   }
 
   h2, h3 {
@@ -458,15 +484,15 @@ async obtenerDetallesFactura() {
   }
 
   .glassmorphism button {
-    background-color: #d9534f;
-    color: #fff;
+    background-color: #f0f0f0; /* Gris claro o cualquier otro color */
+  color: #333; /* Color de texto para contraste */
     border: none;
     padding: 5px 10px;
     cursor: pointer;
   }
 
   .glassmorphism button:hover {
-    background-color: #c9302c;
+    background-color: #3498db;
   }
 
   .glassmorphism div > div {

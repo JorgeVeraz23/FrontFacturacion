@@ -56,6 +56,7 @@
           <td>{{ detallito.precio }}</td>
           <td>{{ detallito.cantidad }}</td>
           <td>{{ detallito.subtotal }}</td>
+          <td>{{ detallito.idUsuario }}</td>
         </tr>
       </tbody>
     </table>
@@ -133,6 +134,8 @@ th, td {
 
 th {
   background: #3498dbcc; /* Fondo con transparencia */
+  background-color: #f0f0f0; /* Gris claro o cualquier otro color */
+  color: #333; /* Color de texto para contraste */
 }
 
 tr:nth-child(even) {

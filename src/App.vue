@@ -72,6 +72,10 @@ button:hover {
     border: 1px solid #ddd;
     text-align: left;
   }
+  th {
+  background-color: #f0f0f0; /* Gris claro o cualquier otro color */
+  color: #333; /* Color de texto para contraste */
+}
 
 
  

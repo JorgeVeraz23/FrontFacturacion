@@ -89,6 +89,8 @@ th {
   background-color: rgba(52, 152, 219, 0.8); /* Azul claro con transparencia */
   color: white;
   font-weight: bold;
+  background-color: #f0f0f0; /* Gris claro o cualquier otro color */
+  color: #333;
 }
 
 tr {

@@ -220,9 +220,16 @@ button {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  background-color: #f0f0f0; /* Gris claro o cualquier otro color */
+  color: #333; /* Color de texto para contraste */
 }
 
 button:hover {
   background-color: #3498db; /* Cambio de color al pasar el ratón */
+}
+
+th {
+  background-color: #f0f0f0; /* Gris claro o cualquier otro color */
+  color: #333; /* Color de texto para contraste */
 }
 </style>
