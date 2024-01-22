@@ -14,50 +14,56 @@
 
       <div v-if="selectedItem === 0">
         <!-- Formulario para Crear Familia de Producto -->
-        <label>Código:</label>
-        <input v-model="familiaproducto.codigo" type="text" />
+        <div class="form-container">
+          <label>Código:</label>
+          <input v-model="familiaproducto.codigo" type="text" />
 
-        <label>Nombre:</label>
-        <input v-model="familiaproducto.nombre" type="text" />
+          <label>Nombre:</label>
+          <input v-model="familiaproducto.nombre" type="text" />
 
-        <label>Activo:</label>
-        <input v-model="familiaproducto.activo" type="checkbox" />
+          <label>Activo:</label>
+          <input v-model="familiaproducto.activo" type="checkbox" />
 
-        <label>ID Usuario:</label>
-        <input v-model="familiaproducto.idUsuario" type="number" />
+          <label>ID Usuario:</label>
+          <input v-model="familiaproducto.idUsuario" type="number" />
 
-        <button @click="guardarFamiliaProducto">Guardar Familia de Producto</button>
+          <button @click="guardarFamiliaProducto">Guardar Familia de Producto</button>
+        </div>
       </div>
 
       <div v-if="selectedItem === 1">
         <!-- Formulario para Editar Familia de Producto -->
-        <label>ID Familia de Producto a Editar:</label>
-        <input v-model="idFamiliaProductoEditar" type="text" />
+        <div class="form-container">
+          <label>ID Familia de Producto a Editar:</label>
+          <input v-model="idFamiliaProductoEditar" type="text" />
 
-        <label>Código:</label>
-        <input v-model="familiaproducto.codigo" type="text" />
+          <label>Código:</label>
+          <input v-model="familiaproducto.codigo" type="text" />
 
-        <label>Nombre:</label>
-        <input v-model="familiaproducto.nombre" type="text" />
+          <label>Nombre:</label>
+          <input v-model="familiaproducto.nombre" type="text" />
 
-        <label>Activo:</label>
-        <input v-model="familiaproducto.activo" type="checkbox" />
+          <label>Activo:</label>
+          <input v-model="familiaproducto.activo" type="checkbox" />
 
-        <label>Fecha de Creación:</label>
-        <input v-model="familiaproducto.fechaCreacion" type="datetime-local" />
+          <label>Fecha de Creación:</label>
+          <input v-model="familiaproducto.fechaCreacion" type="datetime-local" />
 
-        <label>ID Usuario:</label>
-        <input v-model="familiaproducto.idUsuario" type="number" />
+          <label>ID Usuario:</label>
+          <input v-model="familiaproducto.idUsuario" type="number" />
 
-        <button @click="actualizarFamiliaProducto">Actualizar Familia de Producto</button>
+          <button @click="actualizarFamiliaProducto">Actualizar Familia de Producto</button>
+        </div>
       </div>
 
       <div v-if="selectedItem === 2">
         <!-- Formulario para Eliminar Familia de Producto -->
-        <label>ID Familia de Producto a Eliminar:</label>
-        <input v-model="idFamiliaProductoEliminar" type="text" />
+        <div class="form-container">
+          <label>ID Familia de Producto a Eliminar:</label>
+          <input v-model="idFamiliaProductoEliminar" type="text" />
 
-        <button @click="eliminarFamiliaProducto">Eliminar Familia de Producto</button>
+          <button @click="eliminarFamiliaProducto">Eliminar Familia de Producto</button>
+        </div>
       </div>
     </div>
   </div>
@@ -187,7 +193,17 @@ button {
   cursor: pointer;
 }
 
-/* Agrega estilos para los inputs y el botón del formulario */
+/* Estilos de glassmorfismo para el formulario */
+.form-container {
+  background: rgba(255, 255, 255, 0.1); /* Fondo con transparencia */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Borde con transparencia */
+  border-radius: 8px;
+  backdrop-filter: blur(10px); /* Desenfoque */
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
 label {
   display: block;
   margin-bottom: 5px;
@@ -196,6 +212,17 @@ label {
 input {
   margin-bottom: 10px;
 }
-</style>
 
-  
+button {
+  background-color: rgba(52, 152, 219, 0.8); /* Azul claro con transparencia */
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #3498db; /* Cambio de color al pasar el ratón */
+}
+</style>

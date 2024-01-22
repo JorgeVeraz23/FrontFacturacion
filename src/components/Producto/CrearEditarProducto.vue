@@ -1,4 +1,3 @@
-<!-- Menu.vue -->
 <template>
   <div>
     <h2>Menú de Acciones</h2>
@@ -13,7 +12,7 @@
       <h3>{{ menuItems[selectedItem].content.title }}</h3>
       <p>{{ menuItems[selectedItem].content.description }}</p>
 
-      <div v-if="selectedItem === 0">
+      <div v-if="selectedItem === 0" class="form-container glassmorphism">
         <!-- Formulario para Crear Producto -->
         <label>Código:</label>
         <input v-model="producto.codigo" type="text" />
@@ -39,7 +38,7 @@
         <button @click="guardarProducto">Guardar Producto</button>
       </div>
 
-      <div v-if="selectedItem === 1">
+      <div v-if="selectedItem === 1" class="form-container glassmorphism">
         <!-- Formulario para Editar Producto -->
         <label>ID Producto a Editar:</label>
         <input v-model="idProductoEditar" type="text" />
@@ -60,7 +59,7 @@
         <input v-model="producto.activo" type="checkbox" />
 
         <label>Fecha de Creación:</label>
-  <input v-model="producto.fechaCreacion" type="datetime-local" />
+        <input v-model="producto.fechaCreacion" type="datetime-local" />
 
         <label>ID Usuario:</label>
         <input v-model="producto.idUsuario" type="number" />
@@ -68,7 +67,7 @@
         <button @click="actualizarProducto">Actualizar Producto</button>
       </div>
 
-      <div v-if="selectedItem === 2">
+      <div v-if="selectedItem === 2" class="form-container glassmorphism">
         <!-- Formulario para Eliminar Producto -->
         <label>ID Producto a Eliminar:</label>
         <input v-model="idProductoEliminar" type="text" />
@@ -112,7 +111,7 @@ export default {
       // Utiliza this.producto para obtener los datos del producto
       // Puedes usar la función fetch o axios para realizar la llamada a la API
       // Ejemplo usando fetch:
-      fetch('localhost:7083/api/Producto', {
+      fetch('https://localhost:7083/api/Producto', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -207,7 +206,6 @@ export default {
   },
 };
 </script>
-
 <style scoped>
 /* Estilos opcionales para el componente */
 h2 {
@@ -223,10 +221,19 @@ h2 {
 
 button {
   margin-right: 10px;
-  cursor: pointer;
 }
 
-/* Agrega estilos para los inputs y el botón del formulario */
+/* Estilos de glassmorfismo para el formulario */
+.form-container {
+  background: rgba(255, 255, 255, 0.1); /* Fondo con transparencia */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Borde con transparencia */
+  border-radius: 8px;
+  backdrop-filter: blur(10px); /* Desenfoque */
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
 label {
   display: block;
   margin-bottom: 5px;
@@ -234,5 +241,18 @@ label {
 
 input {
   margin-bottom: 10px;
+}
+
+button {
+  background-color: rgba(52, 152, 219, 0.8); /* Azul claro con transparencia */
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #3498db; /* Cambio de color al pasar el ratón */
 }
 </style>

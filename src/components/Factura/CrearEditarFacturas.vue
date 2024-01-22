@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="glassmorphism">
     <!-- Sección para ingresar datos de la factura -->
     <div>
       <label for="numeroFactura">Número de Factura:</label>
@@ -26,11 +26,11 @@
     <!-- Sección para mostrar productos y detalles de la factura -->
     <label for="productId">ID del Producto:</label>
     <input v-model="productId" type="number" id="productId" />
-    
+
     <button @click="getProduct">Obtener Producto</button>
 
     <!-- Tabla para mostrar productos -->
-    <table v-if="productsToShow.length > 0">
+    <table v-if="productsToShow.length > 0" class="glassmorphism">
       <!-- Cabecera de la tabla -->
       <thead>
         <tr>
@@ -62,129 +62,68 @@
         </tr>
       </tbody>
     </table>
-    
-    <table>
-  <thead>
-    <tr>
-      <th>Código</th>
-      <th>Nombre</th>
-      <th>Cantidad</th>
-      <th>Precio/u</th>
-      <th>SubTotal</th>
-      <th>IdItem</th>
-      <!-- Agrega más columnas según sea necesario -->
-    </tr>
-  </thead>
-  <tbody>
-    <tr v-for="(producto, index) in productosEnCarrito" :key="index">
-      <td>{{ producto.codigo }}</td>
-      <td>{{ producto.nombre }}</td>
-      <td>{{ producto.cantidad }}</td>
-      <td>{{ producto.precio }}</td>
-      <td>{{ producto.subtotal }}</td>
-      <td>{{ producto.idItem }}</td>
-      <td>
-        <button @click="eliminarDetalleFactura(producto.idItem, index)" v-if="producto && producto.idItem">Eliminar Producto</button>
-</td>
-    
 
-      <!-- Agrega más columnas según sea necesario -->
-    </tr>
-  </tbody>
-</table>
+    <table class="glassmorphism">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Nombre</th>
+          <th>Cantidad</th>
+          <th>Precio/u</th>
+          <th>SubTotal</th>
+          <th>IdItem</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(producto, index) in productosEnCarrito" :key="index">
+          <td>{{ producto.codigo }}</td>
+          <td>{{ producto.nombre }}</td>
+          <td>{{ producto.cantidad }}</td>
+          <td>{{ producto.precio }}</td>
+          <td>{{ producto.subtotal }}</td>
+          <td>{{ producto.idItem }}</td>
+          <td>
+            <button @click="eliminarDetalleFactura(producto.idItem, index)" v-if="producto && producto.idItem">Eliminar Producto</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
-<div>
-  <p>Total Subtotal: {{ formatCurrency(totalSubtotal) }}</p>
-</div>
+    <div class="glassmorphism">
+      <p>Total Subtotal: {{ formatCurrency(totalSubtotal) }}</p>
+    </div>
 
     <!-- Sección para generar factura -->
-    <div>
+    <div class="glassmorphism">
       <!-- Botón para generar la factura -->
       <button @click="generarFactura">Generar Factura</button>
     </div>
 
     
-    <!--<table>
-      <thead>
-        <tr>
-          <th>id Factura</th>
-          <th>numero Factura</th>
-          <th>ruc Cliente</th>
-          <th>razonSocialCliente</th>
-          <th>subtotal</th>
-          <th>porcentaje Igv</th>
-          <th>igv</th>
-          <th>total</th>
-          <th>ID Usuario</th>
-        </tr>
-      </thead>
-      <tbody>
-    <tr v-for="facturita in facturitas" :key="facturita.idFactura">
-      <td>{{ facturita.idFactura }}</td>
-      <td>{{ facturita.numeroFactura }}</td>
-      <td>{{ facturita.rucCliente }}</td>
-      <td>{{ facturita.razonSocialCliente }}</td>
-      <td>{{ facturita.subtotal }}</td>
-      <td>{{ facturita.porcentajeIgv }}</td>
-      <td>{{ facturita.igv }}</td>
-      <td>{{ facturita.total }}</td>
-      <td>{{ facturita.idUsuario }}</td>
-    </tr>
-    <tr v-if="facturitas.length === 0">
-      <td colspan="9" class="text-center">No hay facturas disponibles.</td>
-    </tr>
-  </tbody>
-  
-</table>-->
-  <!-- Sección para mostrar detalles de la factura -->
-<div v-if="facturaMostrada">
-  <!--<h2>Detalles de la Factura</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>ID Producto</th>
-        <th>Cantidad</th>
-        <th>Precio/u</th>
-        <th>SubTotal</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="(detalle, index) in detallesFacturaMostrados" :key="index">
-        <td>{{ detalle.codigoProducto }}</td>
-        <td>{{ detalle.cantidad }}</td>
-        <td>{{ detalle.precio }}</td>
-        <td>{{ detalle.subtotal }}</td>
-      </tr>
-    </tbody>
-  </table>-->
-
-  <!-- Sección para mostrar detalles de la factura -->
-<div v-if="facturaMostrada">
-  <h2>Detalles de la Factura</h2>
-
-  <div v-if="facturaMostrada.idProducto !== undefined">
-    <p>ID Producto: {{ facturaMostrada.idProducto }}</p>
-    <p>Cantidad: {{ facturaMostrada.cantidad }}</p>
-    <p>Precio/u: {{ facturaMostrada.precio }}</p>
-    <p>SubTotal: {{ formatCurrency(facturaMostrada.subtotal) }}</p>
+    </div>
+    <div class="glassmorphism" v-if="facturaMostrada">
+      <h2>Factura</h2>
+      <div>
+        <p>id Factura: {{ facturaMostrada.idFactura }}</p>
+        <p>Numero Factura: {{ facturaMostrada.numeroFactura }}</p>
+        <p>RUC: {{ facturaMostrada.rucCliente }}</p>
+        <p>Razon Social Cliente: {{ facturaMostrada.razonSocialCliente }}</p>
+        <p>Total Subtotal: {{ formatCurrency(facturaMostrada.subtotal) }}</p>
+        <p>Porcentaje IGV: {{ facturaMostrada.porcentajeIgv }}%</p>
+        <p>Total IGV: {{ formatCurrency(facturaMostrada.igv) }}</p>
+        <p>Total Factura: {{ formatCurrency(facturaMostrada.total) }}</p>
+      </div>
+      <h3>Detalles de la factura</h3>
+      <div v-for="(detalle, index) in detallesFacturaMostrada" :key="index">
+        <p>Id Item: {{ detalle.idItem }}</p>
+        <p>Codigo Producto: {{ detalle.codigoProducto }}</p>
+        <p>Nombre Producto: {{ detalle.nombreProducto }}</p>
+        <p>Precio: {{ formatCurrency(detalle.precio) }}</p>
+        <p>Cantidad: {{ detalle.cantidad }}</p>
+        <p>Subtotal: {{ formatCurrency(detalle.subtotal) }}</p>
+      </div>
   </div>
-
-  <div>
-    <p>Total Subtotal: {{ formatCurrency(facturaMostrada.subtotal) }}</p>
-    <p>Porcentaje IGV: {{ facturaMostrada.porcentajeIgv }}%</p>
-    <p>Total IGV: {{ formatCurrency(facturaMostrada.igv) }}</p>
-    <p>Total Factura: {{ formatCurrency(facturaMostrada.total) }}</p>
-  </div>
-</div>
-
-</div>
-
-
-</div>
-
-  
-</template> 
-
+</template>
 <script>
 import axios from 'axios';
 
@@ -204,6 +143,7 @@ export default {
       idUsuarioFactura: null,
       idFacturaMostrar: null,
       facturaMostrada: null,
+      detalleFacturaMostrada: null,
       facturitas: [],
       productosEnCarrito: [],
       detallesFacturaMostrados: [],
@@ -391,6 +331,9 @@ export default {
 
     if (response.ok) {
       console.log('Factura generada correctamente');
+      // Actualizar los datos de detallesFacturaMostrada
+      await this.obtenerDetallesFactura();
+      
     } else {
       console.error('Error al generar la factura:', response.statusText);
     }
@@ -416,21 +359,25 @@ async obtenerFacturaPorUltimoId() {
     console.error('Error al obtener factura:', error);
   }
 },
-async obtenerDetallesFactura(idFactura) {
+async obtenerDetallesFactura() {
   try {
-    const response = await axios.get(`https://localhost:7083/api/DetalleFactura/porFactura/${idFactura}`);
-
+    const [idFactura, idUsuario] = await this.ultimaFactura1();
+    console.log(idUsuario);
+    
+    const response = await axios.get(`https://localhost:7083/api/DetalleFactura/BuscarPorIdFactura/${idFactura}`)
     if (response.status === 200) {
-      return response.data.resultado;
+      this.detallesFacturaMostrada = response.data.resultado;
     } else {
       console.error('Error al obtener detalles de factura:', response.statusText);
-      return [];
+      this.detallesFacturaMostrada = [];
     }
   } catch (error) {
     console.error('Error al obtener detalles de factura:', error);
-    return [];
+    this.detallesFacturaMostrada = [];
   }
-},
+}
+
+,
 
 
 
@@ -441,7 +388,88 @@ async obtenerDetallesFactura(idFactura) {
   mounted() {
     console.log('Componente montado');
     this.obtenerFacturaPorUltimoId();
+    this.obtenerDetallesFactura();
   }
  
 };
 </script>
+<style scoped>
+  .glassmorphism {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-top: 20px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+
+  input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+
+  button {
+    padding: 10px 15px;
+    background-color: #4caf50;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #45a049;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+
+  th {
+    background-color: #3498dbcc;
+    color: white;
+  }
+
+  h2, h3 {
+    margin-bottom: 10px;
+  }
+
+  p {
+    margin: 5px 0;
+  }
+
+  .glassmorphism button {
+    background-color: #d9534f;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+
+  .glassmorphism button:hover {
+    background-color: #c9302c;
+  }
+
+  .glassmorphism div > div {
+    margin: 10px 0;
+  }
+</style>
